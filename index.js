@@ -219,9 +219,16 @@ console.log(
  */
 function checkAndPreventExtensions(obj) {
   // Перевіряємо, чи вхідний параметр є об'єктом, якщо ні, повертаємо false
+  if (typeof obj !== "object" || obj === null) {
+    return false;
+  }
   // Перевіряємо, чи можна додати нові властивості до об'єкта
-  // Якщо можна, запобігаємо подальшому додаванню властивостей
+  if (Object.isExtensible(obj)) {
+    // Якщо можна, запобігаємо подальшому додаванню властивостей
+    Object.preventExtensions(obj);
+  }
   // Повторно перевіряємо, чи можна додати нові властивості до об'єкта, та повертаємо результат
+  return Object.isExtensible(obj);
 }
 console.log("Завдання: 8 ==============================");
 console.log(checkAndPreventExtensions({ a: 1, b: 2 })); // Виведе false
@@ -237,8 +244,13 @@ console.log(checkAndPreventExtensions({ a: 1, b: 2 })); // Виведе false
  */
 function sealAndCheck(obj) {
   // Перевіряємо, чи вхідний параметр є об'єктом, якщо ні, повертаємо false
+  if (typeof obj !== "object" || obj === null) {
+    return false;
+  }
   // Запечатовуємо об'єкт
+  Object.seal(obj);
   // Перевіряємо, чи запечатаний об'єкт, та повертаємо результат
+  return Object.isSealed(obj);
 }
 console.log("Завдання: 9 ==============================");
 console.log(sealAndCheck({ a: 1, b: 2 })); // Виведе true
@@ -262,8 +274,12 @@ function checkOwnership(obj1, obj2, key) {
   // Використовуємо метод hasOwnProperty() для перевірки наявності ключа в обох об'єктах.
   // Якщо обидва об'єкти мають вказаний ключ повертаємо результат порівняння їх значень.
   // Якщо значення однакові, повернемо true.
+  if (obj1.hasOwnProperty(key) && obj2.hasOwnProperty(key)) {
+    return obj1[key] === obj2[key];
+  }
   // Якщо відрізняються, повернемо false.
   // Якщо хоч один з об'єктів не має вказаного ключа, повернемо false.
+  return false;
 }
 
 // Приклад використання функції:
@@ -282,9 +298,15 @@ console.log(checkOwnership({ a: 1, b: 2, c: 3 }, { a: 1, b: 2, c: 4 }, "a")); //
  */
 function getObjectValuesSum(obj) {
   // Перевірка, чи є аргумент об'єктом,якщо ні повертаємо 0
+  if (typeof obj !== "object" || obj === null) {
+    return 0;
+  }
   // Отримуємо всі значення об'єкта
+  const allValuesObj = Object.values(obj);
   // Обчислюємо суму значень
+  const sumValuesObj = allValuesObj.reduce((acc, val) => acc + val, 0);
   // Повертаємо суму
+  return sumValuesObj;
 }
 
 console.log("Завдання: 11 ==============================");
@@ -302,11 +324,23 @@ console.log(getObjectValuesSum({ a: 1, b: 2, c: 3 })); // Виведе 6
  */
 function convertArrayToObj(arr) {
   // Перевіряємо, чи вхідний параметр є масивом, якщо ні, повертаємо пустий об'єкт
+  if (!Array.isArray(arr)) {
+    return {};
+  }
   // Створюємо пустий об'єкт який записуємо в змінну
+  const obj = {};
   // Проходимося по кожному підмасиву в масиві за допопмогою циклу for, лічильник від нуля до довжини масиву
   // Розпаковуємо підмасив за допомогою деструктурізації на окремі змінні для ключа та значення
-  // Перевіряємо, чи існує вже ключ в об'єкті,якщо так виводимо в консоль повідомлення `У масиві є дубльований ключ: ${key}`
-  // Додаємо ключ та значення до об'єкта
+  for (let [key, value] of arr) {
+    // Перевіряємо, чи існує вже ключ в об'єкті,якщо так виводимо в консоль повідомлення `У масиві є дубльований ключ: ${key}`
+    if (obj.hasOwnProperty(key)) {
+      console.log(`У масиві є дубльований ключ: ${key}`);
+    }
+    // Додаємо ключ та значення до об'єкта
+    obj[key] = value;
+  }
+  return obj;
+
   // Застосовуємо метод Object.fromEntries() для створення об'єкта
 }
 
